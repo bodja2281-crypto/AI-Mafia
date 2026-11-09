@@ -188,7 +188,7 @@ body.show-roles .seat .role { display: block; }
 .seat .model { font-size: 8px; color: #b4b69f; margin-top: 5px; max-width: 130%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .seat.speaking .avatar.ball svg { transform: none; animation: none; filter: drop-shadow(0 0 6px #d2b77350) drop-shadow(0 3px 2px #0009); }
 body.night .seat.speaking .avatar.ball svg { filter: drop-shadow(0 0 14px #b6c2d760); }
-.speech { position: absolute; left: 50%; top: 51%; transform: translate(-50%, -10%); width: 48%; display: none; z-index: 9; background: #e9e4d5; border: 1px solid #c0b38e; border-radius: 8px; padding: 14px 20px; color: #28362c; text-align: center; box-shadow: 0 12px 24px #0006; }
+.speech { position: absolute; left: 50%; top: 51%; transform: translate(-50%, -10%); width: 44%; display: none; z-index: 9; background: #e9e4d5; border: 1px solid #c0b38e; border-radius: 8px; padding: 14px 20px; color: #28362c; text-align: center; box-shadow: 0 12px 24px #0006; }
 .speech.show { display: block; animation: speech-in .2s ease-out; }
 .speech::before { content: "“"; position: absolute; left: 13px; top: 2px; font: 36px Georgia, serif; color: #9b916b70; }
 .speech-name { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 7px; color: #75613a; }

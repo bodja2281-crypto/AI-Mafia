@@ -22,14 +22,95 @@
     <section class="stage" id="stage" aria-label="Игровой стол">
       <div class="stage-top"><span class="room-id"><span class="status-dot"></span> КОМНАТА 01</span><span id="gameMode">Демо-режим</span><span class="alive-stat"><strong id="aliveCount">8</strong> <span id="playerCount">/ 8 за столом</span></span></div>
       <div class="table-wrap" id="tableWrap">
-        <div class="scene-bg" aria-hidden="true"><div class="table"><div class="table-monogram">♠<span>AI MAFIA</span><small>TRUST NO ONE</small></div></div></div>
+        <div class="scene-bg" aria-hidden="true"></div>
+        <div class="lamp-light" aria-hidden="true"><span class="lamp-shade"></span></div>
+        <!-- Стол в перспективе: ковёр и столешница тянутся под размер сцены, предметы сохраняют пропорции -->
+        <svg class="rug" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <radialGradient id="rugFill"><stop stop-color="#4a1a1c"/><stop offset=".7" stop-color="#341214"/><stop offset="1" stop-color="#1c0a0b"/></radialGradient>
+              <radialGradient id="rugFade"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".55"/></radialGradient>
+              <pattern id="rugDiamond" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M20 4 36 20 20 36 4 20Z" fill="none" stroke="#d3a868" stroke-opacity=".07" stroke-width="2"/></pattern>
+            </defs>
+            <ellipse cx="500" cy="300" rx="496" ry="296" fill="url(#rugFill)"/>
+            <ellipse cx="500" cy="300" rx="496" ry="296" fill="url(#rugDiamond)"/>
+            <ellipse cx="500" cy="300" rx="470" ry="272" fill="none" stroke="#c99a5c" stroke-opacity=".45" stroke-width="2" vector-effect="non-scaling-stroke"/>
+            <ellipse cx="500" cy="300" rx="452" ry="258" fill="none" stroke="#c99a5c" stroke-opacity=".2" stroke-width="1" vector-effect="non-scaling-stroke"/>
+            <ellipse cx="500" cy="300" rx="496" ry="296" fill="url(#rugFade)"/>
+          </svg>
+        <div class="table-zone" aria-hidden="true">
+          <svg class="table-top" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+            <defs>
+              <radialGradient id="tableShadow" cy=".55"><stop offset=".55" stop-color="#000" stop-opacity=".75"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+              <linearGradient id="wood" x2="0" y2="1"><stop stop-color="#6b4627"/><stop offset=".35" stop-color="#4a2e18"/><stop offset="1" stop-color="#2a180c"/></linearGradient>
+              <linearGradient id="apron" x2="0" y2="1"><stop stop-color="#2a1a0d"/><stop offset="1" stop-color="#120b05"/></linearGradient>
+              <linearGradient id="rimShine" x2="0" y2="1"><stop stop-color="#ffd9a0" stop-opacity=".45"/><stop offset=".25" stop-color="#ffd9a0" stop-opacity="0"/></linearGradient>
+              <radialGradient id="felt" cy=".45" r=".55"><stop stop-color="#4b7a55"/><stop offset=".55" stop-color="#2c5236"/><stop offset="1" stop-color="#16301f"/></radialGradient>
+              <radialGradient id="feltEdge"><stop offset=".78" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".5"/></radialGradient>
+              <radialGradient id="lampPool" cy=".42"><stop stop-color="#ffe2a8" stop-opacity=".22"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient>
+              <pattern id="feltWeave" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 6 6 0" stroke="#b9d8b0" stroke-opacity=".035"/></pattern>
+            </defs>
+            <ellipse cx="500" cy="560" rx="520" ry="460" fill="url(#tableShadow)"/>
+            <ellipse cx="500" cy="540" rx="490" ry="440" fill="url(#apron)"/>
+            <ellipse cx="500" cy="480" rx="490" ry="440" fill="url(#wood)"/>
+            <ellipse cx="500" cy="480" rx="488" ry="438" fill="none" stroke="url(#rimShine)" stroke-width="4" vector-effect="non-scaling-stroke"/>
+            <ellipse cx="500" cy="480" rx="458" ry="408" fill="none" stroke="#c9a265" stroke-opacity=".75" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+            <ellipse cx="500" cy="482" rx="440" ry="390" fill="url(#felt)"/>
+            <ellipse cx="500" cy="482" rx="440" ry="390" fill="url(#feltWeave)"/>
+            <ellipse cx="500" cy="440" rx="330" ry="290" fill="url(#lampPool)"/>
+            <ellipse cx="500" cy="482" rx="440" ry="390" fill="url(#feltEdge)"/>
+            <ellipse cx="500" cy="482" rx="350" ry="300" fill="none" stroke="#e3d3a4" stroke-opacity=".14" stroke-width="1.5" stroke-dasharray="6 7" vector-effect="non-scaling-stroke"/>
+          </svg>
+          <svg class="table-props" viewBox="0 0 1000 420" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="glass" x2="1"><stop stop-color="#fff" stop-opacity=".1"/><stop offset=".3" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#fff" stop-opacity=".06"/></linearGradient>
+              <linearGradient id="whisky" x2="0" y2="1"><stop stop-color="#e8a24a"/><stop offset="1" stop-color="#8a4a14"/></linearGradient>
+              <g id="card"><rect x="-32" y="-46" width="64" height="92" rx="6" fill="#efe8d6" stroke="#2b2219" stroke-opacity=".5"/><rect x="-26" y="-40" width="52" height="80" rx="3" fill="none" stroke="#a5323a" stroke-opacity=".35"/></g>
+              <g id="chipRed"><ellipse rx="26" ry="10" fill="#7e1f24"/><ellipse rx="26" ry="10" fill="none" stroke="#efe2c4" stroke-width="3" stroke-dasharray="6 7"/></g>
+              <g id="chipBlack"><ellipse rx="26" ry="10" fill="#17181a"/><ellipse rx="26" ry="10" fill="none" stroke="#c9a265" stroke-width="3" stroke-dasharray="6 7"/></g>
+            </defs>
+            <!-- Карты веером -->
+            <g transform="translate(180 210) scale(1 .6)">
+              <ellipse cy="50" rx="95" ry="30" fill="#000" opacity=".25"/>
+              <use href="#card" transform="rotate(-28) translate(-20 0)"/>
+              <use href="#card" transform="rotate(-10) translate(-6 -4)"/>
+              <g transform="rotate(10) translate(8 -4)"><use href="#card"/><path d="M0-14c-10-14-24 0-12 10L0 8l12-12c12-10-2-24-12-10Z" fill="#a5323a"/></g>
+              <g transform="rotate(28) translate(22 0)"><use href="#card"/><path d="M0-16 14 4H-14ZM-2 2h4v12h-4z" fill="#1e1a17"/><circle cx="-7" cy="2" r="7" fill="#1e1a17"/><circle cx="7" cy="2" r="7" fill="#1e1a17"/></g>
+            </g>
+            <!-- Стопки фишек -->
+            <g transform="translate(320 280)">
+              <ellipse cy="6" rx="34" ry="12" fill="#000" opacity=".3"/>
+              <use href="#chipRed"/><use href="#chipRed" y="-7"/><use href="#chipRed" y="-14"/><use href="#chipRed" y="-21"/><use href="#chipRed" y="-28"/>
+            </g>
+            <g transform="translate(372 262)">
+              <ellipse cy="6" rx="34" ry="12" fill="#000" opacity=".3"/>
+              <use href="#chipBlack"/><use href="#chipBlack" y="-7"/><use href="#chipBlack" y="-14"/>
+            </g>
+            <!-- Пепельница с сигарой -->
+            <g transform="translate(690 270)">
+              <ellipse cy="6" rx="52" ry="18" fill="#000" opacity=".3"/>
+              <ellipse rx="46" ry="16" fill="#2c2b2a" stroke="#8e8a80" stroke-opacity=".5" stroke-width="2"/>
+              <ellipse rx="32" ry="10" fill="#111"/>
+              <rect x="-6" y="-9" width="70" height="11" rx="5" fill="#5b3a20" transform="rotate(-8)"/>
+              <circle cx="62" cy="-13" r="5" fill="#ff8a3a"/>
+              <path d="M64-20c-10-20 14-28 2-48s10-28 4-44" fill="none" stroke="#d9d4c8" stroke-opacity=".18" stroke-width="5" stroke-linecap="round"/>
+            </g>
+            <!-- Стакан виски -->
+            <g transform="translate(820 225)">
+              <ellipse cy="52" rx="34" ry="11" fill="#000" opacity=".35"/>
+              <path d="M-28-30 -24 48c0 8 48 8 48 0l4-78Z" fill="url(#glass)" stroke="#fff" stroke-opacity=".25"/>
+              <path d="M-26 6 -24 46c0 7 48 7 48 0l2-40c-12 6-40 6-52 0Z" fill="url(#whisky)" opacity=".85"/>
+              <rect x="-12" y="-6" width="20" height="18" rx="3" fill="#fff" fill-opacity=".35" transform="rotate(14)"/>
+              <ellipse cy="-30" rx="28" ry="8" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2"/>
+            </g>
+          </svg>
+          <div class="table-monogram">♠<span>AI MAFIA</span><small>TRUST NO ONE</small></div>
+        </div>
         <div class="banner" role="status">
           <span class="phase-icon sun" aria-hidden="true">☼</span><span class="phase-icon moon" aria-hidden="true">☾</span>
           <div class="bn-text"><div class="bn-title" id="phase">ОЖИДАНИЕ НАЧАЛА</div><div class="bn-sub" id="tableCenter">МАФИЯ</div></div>
         </div>
         <div id="seats"></div>
         <div class="speech" id="speech"><div class="speech-name" id="speechName"></div><div id="speechText"></div></div>
-        <div class="scene-caption"><span></span> ЗДЕСЬ ДАЖЕ АЛГОРИТМЫ УМЕЮТ ЛГАТЬ <span></span></div>
       </div>
       <div class="stage-bottom">
         <div class="controls">

@@ -160,30 +160,56 @@ function renderTable() {
   layoutSeats(); renderTableStats();
   document.body.classList.toggle('show-roles', !!S.showRoles);
 }
-// Посадка привязана к эллипсу столешницы, а не к независимым рядам.
+// Стол в перспективе сверху. Игроки сидят по краю эллипса: дальний ряд уходит под столешницу,
+// ближний сидит в креслах перед ней. Геометрия считается здесь, а стол и лампа подгоняются под неё.
 function layoutSeats() {
   if (!G) return;
-  const wr = $('tableWrap'), W = wr.clientWidth, n = G.players.length;
+  const wr = $('tableWrap'), W = wr.clientWidth, H = wr.clientHeight, n = G.players.length;
   if (!W) return;
+  const narrow = W < 600;
   const per = Math.ceil(n / 2);
-  const ball = Math.min(86, W / (per * 1.55));
-  const table = wr.querySelector('.table');
-  const cx = table.offsetLeft + table.offsetWidth / 2;
-  const cy = table.offsetTop + table.offsetHeight / 2;
-  const rx = table.offsetWidth / 2, ry = table.offsetHeight / 2;
+  const rx = W * (narrow ? .41 : .37);
+  const ball = Math.min(84, W * (narrow ? .78 : .74) / (per + .6));
+  const h = ball * 1.15, hBack = h * .86;
+  // На узком экране реплика уезжает под стол, поэтому снизу резервируется место.
+  const speechDock = narrow ? 128 : 0;
+  const top = 78, bottom = 14 + speechDock;
+  const below = Math.max(1.36 * h, h + 46) - .45 * h;
+  const ry = Math.max(60, Math.min(rx * (narrow ? .78 : .44), (H - top - bottom - .9 * hBack - below) / 2));
+  const cx = W / 2, cy = top + .9 * hBack + ry;
   wr.style.setProperty('--ball', ball + 'px');
+
+  // Внешний край столешницы в SVG: rx 490/1000 ширины, ry 440/1000 высоты, центр на 480/1000.
+  const tw = 2 * rx / .98, th = ry / .44;
+  Object.assign(wr.querySelector('.table-zone').style, { left: cx - tw / 2 + 'px', top: cy - .48 * th + 'px', width: tw + 'px', height: th + 'px' });
+  Object.assign(wr.querySelector('.rug').style, { left: cx - tw * .85 + 'px', top: cy - .1 * th + 'px', width: tw * 1.7 + 'px', height: th * 1.15 + 'px' });
+  Object.assign(wr.querySelector('.lamp-light').style, { left: cx - rx * 1.05 + 'px', width: rx * 2.1 + 'px', height: cy + 'px' });
+
   G.players.forEach((p, i) => {
-    const row = i < per ? 0 : 1, k = row ? i - per : i;
-    const count = row ? n - per : per;
-    const t = (k + .5) / count;
-    const u = (t - .5) * 1.65;
-    const edge = cy + (row ? 1 : -1) * ry * Math.sqrt(1 - u * u);
-    const size = ball * (row ? 1 : .92);
+    const back = i < per, k = back ? i : i - per;
+    const count = back ? per : n - per;
+    const u = count > 1 ? (k / (count - 1) - .5) * 1.72 : 0;
+    const x = cx + rx * u * (back || narrow ? 1 : .94);
+    const y = cy + (back ? -1 : 1) * ry * Math.sqrt(1 - u * u) * .97;
+    const size = back ? ball * .86 : ball;
     p.el.style.setProperty('--ball', size + 'px');
-    p.el.classList.toggle('front-row', !!row);
-    p.el.style.left = cx + rx * u + 'px';
-    p.el.style.top = edge - size * (row ? .58 : 1.08) + 'px';
+    p.el.classList.toggle('back', back);
+    p.el.classList.toggle('front-row', !back);
+    p.el.style.left = x - size * .625 + 'px';
+    p.el.style.top = y - size * 1.15 * (back ? .97 : .45) + 'px';
   });
+
+  const sp = $('speech').style;
+  if (narrow) {
+    sp.setProperty('--speech-x', '50%'); sp.setProperty('--speech-w', W - 24 + 'px');
+    sp.setProperty('--speech-y', H - speechDock / 2 - 6 + 'px');
+  } else {
+    // Реплика между дальним рядом с табличками и головами ближнего ряда, не задевая крайних игроков.
+    const lo = cy - ry * .97 + .03 * hBack + 52, hi = cy + ry * .97 - .45 * h;
+    sp.setProperty('--speech-x', cx + 'px');
+    sp.setProperty('--speech-y', (lo + hi) / 2 + 'px');
+    sp.setProperty('--speech-w', Math.min(rx * 1.15, 560) + 'px');
+  }
 }
 function renderTableStats() {
   $('aliveCount').textContent = G.players.filter(p => p.alive).length;

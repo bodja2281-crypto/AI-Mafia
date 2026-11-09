@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="room" x2="0" y2="1">
+      <stop stop-color="#102b2b"/>
+      <stop offset=".52" stop-color="#091c1e"/>
+      <stop offset="1" stop-color="#050d11"/>
+    </linearGradient>
+    <linearGradient id="wood" x2="1" y2="0">
+      <stop stop-color="#102c2b"/>
+      <stop offset=".5" stop-color="#1a3935"/>
+      <stop offset="1" stop-color="#0b2224"/>
+    </linearGradient>
+    <linearGradient id="recess" x2="0" y2="1">
+      <stop stop-color="#173638"/>
+      <stop offset=".62" stop-color="#10282c"/>
+      <stop offset="1" stop-color="#0b1a20"/>
+    </linearGradient>
+    <linearGradient id="cityGlow" x2="0" y2="1">
+      <stop stop-color="#b17b48" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#b17b48" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="floor" x2="0" y2="1">
+      <stop stop-color="#0a191b"/>
+      <stop offset=".18" stop-color="#101c1c"/>
+      <stop offset="1" stop-color="#060c10"/>
+    </linearGradient>
+    <linearGradient id="beam" x2="0" y2="1">
+      <stop stop-color="#d5a362" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#c58a4c" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="grain" width="54" height="120" patternUnits="userSpaceOnUse">
+      <path d="M8 0v120M12 0v120" stroke="#91a18a" stroke-opacity=".025" stroke-width="1"/>
+      <path d="M39 0v120" stroke="#020b0e" stroke-opacity=".18" stroke-width="3"/>
+    </pattern>
+    <g id="arch">
+      <path d="M0 414V232a165 165 0 0 1 330 0v182Z" fill="#071316" stroke="#091619" stroke-width="18"/>
+      <path d="M18 414V232a147 147 0 0 1 294 0v182Z" fill="url(#recess)" stroke="#47604f" stroke-opacity=".68" stroke-width="3"/>
+      <path d="M36 414V232a129 129 0 0 1 258 0v182Z" fill="#0c2428" stroke="#ba8b54" stroke-opacity=".38" stroke-width="2"/>
+      <path d="M52 414V232a113 113 0 0 1 226 0v182Z" fill="url(#cityGlow)"/>
+      <path d="M52 346h226" stroke="#ac8150" stroke-opacity=".4" stroke-width="2"/>
+      <path d="M164 119v295M52 232h226" stroke="#8c7853" stroke-opacity=".34" stroke-width="2"/>
+      <path d="M64 346h200" stroke="#c39963" stroke-opacity=".24"/>
+      <g fill="#c6975d" opacity=".34">
+        <path d="M66 314h26v32H66zM101 287h23v59h-23zM132 319h18v27h-18zM185 301h20v45h-20zM217 276h25v70h-25zM251 316h15v30h-15z"/>
+        <path d="M79 278h11v18H79zM241 255h10v14h-10zM111 257h8v14h-8zM194 269h8v14h-8z" opacity=".7"/>
+      </g>
+      <g fill="#d2a36a" opacity=".22">
+        <path d="M72 326h5v7h-5zM82 326h5v7h-5zM107 300h5v7h-5zM115 300h5v7h-5zM189 312h5v7h-5zM197 312h5v7h-5zM224 288h5v7h-5zM234 288h5v7h-5zM254 325h5v6h-5z"/>
+      </g>
+    </g>
+    <g id="pendant">
+      <path d="M0 0v104" stroke="#b18a55" stroke-opacity=".7" stroke-width="3"/>
+      <path d="M-12 103h24l8 10h-40z" fill="#bd925a"/>
+      <path d="M-30 113h60l-8 14h-44z" fill="#725735" stroke="#d0a66a" stroke-width="2"/>
+      <path d="M-21 127h42l-7 8h-28z" fill="#e3b976" opacity=".85"/>
+      <path d="M-45 137 0 324l45-187Z" fill="url(#beam)"/>
+      <circle cy="133" r="4" fill="#ffe0a2"/>
+    </g>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#room)"/>
+  <path d="M0 0h1200v800H0z" fill="#000" opacity=".13"/>
+
+  <!-- Deep side walls and repeating timber bays -->
+  <path d="M0 96h1200v410H0z" fill="url(#wood)"/>
+  <path d="M0 96h1200v410H0z" fill="url(#grain)"/>
+  <g fill="#071719" opacity=".56">
+    <path d="M0 110h88v396H0zM1112 110h88v396h-88z"/>
+    <path d="M91 126h28v365H91zM1081 126h28v365h-28z"/>
+    <path d="M323 125h28v367h-28zM849 125h28v367h-28z"/>
+  </g>
+  <g stroke="#b28a52" fill="none" opacity=".48">
+    <path d="M24 127h44v342H24zM1132 127h44v342h-44z" stroke-width="2"/>
+    <path d="M31 136h30v324H31zM1139 136h30v324h-30z" stroke-opacity=".55"/>
+    <path d="M0 484h1200" stroke-width="6"/>
+    <path d="M0 494h1200" stroke="#4b5c4c" stroke-width="3"/>
+  </g>
+
+  <!-- Matching arched city recesses -->
+  <use href="#arch" x="337" y="74"/>
+  <use href="#arch" x="337" y="74" transform="translate(1200 0) scale(-1 1)"/>
+
+  <!-- Central darkened panel keeps the play area visually quiet -->
+  <path d="M421 188h358v296H421z" fill="#071416" opacity=".54"/>
+  <path d="M438 202h324v271H438z" fill="none" stroke="#8f7650" stroke-opacity=".23" stroke-width="2"/>
+  <path d="M451 215h298v245H451z" fill="none" stroke="#91a08a" stroke-opacity=".1"/>
+  <path d="M600 217v240M451 339h298" stroke="#ad8857" stroke-opacity=".12"/>
+
+  <!-- Warm brass pendants at the outer edges -->
+  <use href="#pendant" x="175" y="0"/>
+  <use href="#pendant" x="1025" y="0"/>
+
+  <!-- Lower wainscot and restrained floor perspective -->
+  <path d="M0 508h1200v72H0z" fill="#0b1d1e"/>
+  <path d="M0 516h1200M0 568h1200" stroke="#b18a55" stroke-opacity=".32" stroke-width="3"/>
+  <path d="M0 580h1200v220H0z" fill="url(#floor)"/>
+  <path d="M600 581 122 800M600 581l478 219M0 668h1200M0 741h1200" fill="none" stroke="#8c795a" stroke-opacity=".13" stroke-width="2"/>
+  <path d="M0 580h1200" stroke="#d0a365" stroke-opacity=".22" stroke-width="4"/>
+
+  <!-- Edge falloff; preserves contrast behind avatars and table -->
+  <path d="M0 0h1200v800H0z" fill="none" stroke="#02080b" stroke-width="100" opacity=".52"/>
+  <path d="M0 0h1200v800H0z" fill="#02090c" opacity=".16"/>
+</svg>

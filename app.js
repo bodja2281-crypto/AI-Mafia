@@ -156,32 +156,34 @@ function renderTable() {
     seats.appendChild(el);
     p.el = el; p.bubble = bubble;
   });
-  layoutSeats();
+  layoutSeats(); renderTableStats();
   document.body.classList.toggle('show-roles', !!S.showRoles);
 }
-// Рассаживает игроков дугой вдоль стола (на узком экране — в два ряда)
+// Два ряда вокруг стола, независимо от числа игроков.
 function layoutSeats() {
   if (!G) return;
   const wr = $('tableWrap'), W = wr.clientWidth, H = wr.clientHeight, n = G.players.length;
   if (!W) return;
-  const narrow = W < 700;
-  const rows = narrow && n > 4 ? 2 : 1;
-  const per = Math.ceil(n / rows);
-  const ball = Math.min(narrow ? 22 : 11.2, 90 / per) * W / 100;
+  const per = Math.ceil(n / 2);
+  const ball = Math.min(86, W / (per * 1.55));
   wr.style.setProperty('--ball', ball + 'px');
   G.players.forEach((p, i) => {
-    const r = rows === 2 ? (i < per ? 0 : 1) : 0, k = rows === 2 ? (r ? i - per : i) : i;
-    const cnt = rows === 2 ? (r ? n - per : per) : n;
-    const t = cnt > 1 ? k / (cnt - 1) : .5;
-    const x = 8 + 84 * t;
-    let y;
-    if (rows === 1) y = 55 - 7 * Math.sin(Math.PI * t) + 4;      // дуга: края ниже, середина выше
-    else y = (r ? 66 : 40) - 3 * Math.sin(Math.PI * t);
-    p.el.style.left = (x * W / 100) + 'px'; p.el.style.top = (y * H / 100) + 'px';
+    const row = i < per ? 0 : 1, k = row ? i - per : i;
+    const count = row ? n - per : per;
+    const t = (k + .5) / count;
+    p.el.style.left = (6 + 88 * t) * W / 100 + 'px';
+    p.el.style.top = ((row ? 70 : 18) - 3 * Math.sin(Math.PI * t)) * H / 100 + 'px';
   });
+}
+function renderTableStats() {
+  $('aliveCount').textContent = G.players.filter(p => p.alive).length;
+  $('playerCount').textContent = '/ ' + G.players.length + ' за столом';
+  const demo = G.players.filter(p => !hasKey(p)).length;
+  $('gameMode').textContent = demo === G.players.length ? 'Демо-режим' : demo ? 'AI + демо' : 'AI-режим';
 }
 window.addEventListener('resize', layoutSeats);
 function refreshSeats() {
+  renderTableStats();
   G.players.forEach(p => p.el.classList.toggle('dead', !p.alive));
 }
 function setNight(on) {
@@ -190,7 +192,7 @@ function setNight(on) {
 // Табло раунда сверху: «РАУНД: 1 / ДЕНЬ, ОБСУЖДЕНИЕ»
 const BN = { phase: '', center: '' };
 function renderBanner() {
-  const m = BN.phase.match(/d+/), word = BN.phase.split(/[ (]/)[0];
+  const m = BN.phase.match(/\d+/), word = BN.phase.split(/[ (]/)[0];
   let title, sub;
   if (m) { title = 'РАУНД: ' + m[0]; sub = word.toLowerCase() === BN.center.toLowerCase() || !BN.center ? word : word + ', ' + BN.center; }
   else { title = BN.phase; sub = BN.center.toLowerCase() === BN.phase.toLowerCase() ? '' : BN.center; }
@@ -574,29 +576,12 @@ function speakBrowser(p, text) {
   });
 }
 
-// Облачко над говорящим: сидит над головой игрока, хвостик указывает на него
-function placeSpeech(p) {
-  const wr = $('tableWrap'), sp = $('speech'), W = wr.clientWidth, H = wr.clientHeight;
-  const bw = Math.min(W * .46, 470);
-  sp.style.width = bw + 'px';
-  const sx = p.el.offsetLeft;
-  const top = Math.min(...G.players.map(q => q.el.offsetTop), p.el.offsetTop);
-  const my = W < 700 ? top : p.el.offsetTop;
-  const cx = Math.max(bw / 2 + 8, Math.min(W - bw / 2 - 8, sx));
-  sp.style.left = cx + 'px';
-  sp.style.bottom = (H - my + 12) + 'px';
-  $('speechText').style.maxHeight = Math.max(60, my - 12 - H * .17 - 40) + 'px';
-  sp.style.setProperty('--tail', Math.max(22, Math.min(bw - 22, sx - (cx - bw / 2))) + 'px');
-}
-
 // Показывает реплику и сразу играет уже загруженное аудио (текст и голос появляются вместе)
 async function say(p, text, url, tag) {
   chat(tag ? 'night' : '', text, p.name + (tag || ''), p.color);
   $('subtitle').textContent = '';                 // реплика уже в центре стола, дубль внизу не нужен
-  $('speechName').textContent = tag ? p.name + tag : '';
-  $('speechName').style.color = '#6b4a8f';
-  $('speechText').textContent = text; $('speech').scrollTop = 0;
-  placeSpeech(p);
+  $('speechName').textContent = p.name + (tag || '');
+  $('speechText').textContent = text; $('speechText').scrollTop = 0;
   $('speech').classList.add('show');
   p.el.classList.add('speaking');
   mouthStart(p); lookAt(p);
@@ -879,6 +864,7 @@ $('btnPause').onclick = () => {
 };
 $('btnStop').onclick = () => {
   runToken++; paused = false; stopSpeaking(); mouthStop(); setNight(false);
+  $('speech').classList.remove('show'); lookReset();
   $('btnStart').disabled = false; $('btnPause').disabled = true; $('btnStop').disabled = true;
   setPhase('Остановлено'); chat('event', 'Игра остановлена.');
   G && G.players.forEach(p => p.el.classList.remove('speaking', 'thinking'));
@@ -1002,10 +988,27 @@ function readSettings() {
   S.showRoles = $('sShowRoles').checked; S.players = structuredClone(draft);
 }
 $('sAvatarMode').onchange = () => { S.avatarMode = $('sAvatarMode').value; renderPlayersEditor(); };
-$('btnSettings').onclick = () => { fillSettings(); $('settingsModal').hidden = false; };
-$('btnCloseSettings').onclick = () => { $('settingsModal').hidden = true; };
+function toggleSettings(open) {
+  if (open) fillSettings();
+  $('settingsModal').hidden = !open;
+  document.querySelector('.topbar').inert = open;
+  document.querySelector('main').inert = open;
+  (open ? $('btnCloseSettings') : $('btnSettings')).focus();
+}
+$('btnSettings').onclick = () => toggleSettings(true);
+$('settingsLink').onclick = e => { e.preventDefault(); toggleSettings(true); };
+$('btnCloseSettings').onclick = () => toggleSettings(false);
+$('settingsModal').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.preventDefault(); toggleSettings(false); }
+  if (e.key === 'Tab') {
+    const controls = [...$('settingsModal').querySelectorAll('button, input, select')].filter(el => !el.disabled && el.getClientRects().length);
+    const first = controls[0], last = controls[controls.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
 $('btnSave').onclick = () => {
-  readSettings(); saveSettings(); $('settingsModal').hidden = true;
+  readSettings(); saveSettings(); toggleSettings(false);
   document.body.classList.toggle('show-roles', !!S.showRoles);
   if (!G || $('btnStart').disabled === false) { G = null; previewTable(); }
 };

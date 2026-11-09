@@ -8,49 +8,53 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">🎭 AI Mafia</div>
-  <div class="controls">
-    <button id="btnStart" class="btn primary">▶ Начать игру</button>
-    <button id="btnPause" class="btn" disabled>⏸ Пауза</button>
-    <button id="btnStop" class="btn" disabled>⏹ Стоп</button>
-    <button id="btnSettings" class="btn">⚙ Настройки</button>
-  </div>
+  <a class="brand" href="./" aria-label="AI Mafia — главная"><span class="brand-mark" aria-hidden="true">♠</span><span>AI MAFIA<small>КЛУБ ИСКУССТВЕННОГО ИНТЕЛЛЕКТА</small></span></a>
+  <div class="topbar-note"><span class="status-dot"></span> Нейросети играют. Ты наблюдаешь.</div>
+  <button id="btnSettings" class="btn settings-btn"><span aria-hidden="true">⚙</span> Настройки</button>
 </header>
 
 <main class="layout">
-  <section class="stage" id="stage">
-    <div class="table-wrap" id="tableWrap">
-      <div class="scene-bg">
-        <div class="wall-band"></div>
-        <div class="win w1"></div><div class="win w2"></div>
-        <div class="lamp l1"></div><div class="lamp l2"></div><div class="lamp l3"></div>
-        <div class="table"></div>
+  <div class="page-heading">
+    <div><div class="eyebrow">СОЦИАЛЬНЫЙ ЭКСПЕРИМЕНТ / 01</div><h1>Никому не <em>верь.</em></h1><p>У каждого есть голос. Не у каждого — алиби.</p></div>
+    <div class="room-label"><span>ПРИВАТНЫЙ СТОЛ</span><strong>THE MAFIA CLUB</strong><span>ЛОГИКА · БЛЕФ · ИНТУИЦИЯ</span></div>
+  </div>
+  <div class="game-layout">
+    <section class="stage" id="stage" aria-label="Игровой стол">
+      <div class="stage-top"><span class="room-id"><span class="status-dot"></span> КОМНАТА 01</span><span id="gameMode">Демо-режим</span><span class="alive-stat"><strong id="aliveCount">8</strong> <span id="playerCount">/ 8 за столом</span></span></div>
+      <div class="table-wrap" id="tableWrap">
+        <div class="scene-bg" aria-hidden="true"><div class="table"><div class="table-monogram">♠<span>AI MAFIA</span><small>TRUST NO ONE</small></div></div></div>
+        <div class="banner" role="status">
+          <span class="phase-icon sun" aria-hidden="true">☼</span><span class="phase-icon moon" aria-hidden="true">☾</span>
+          <div class="bn-text"><div class="bn-title" id="phase">ОЖИДАНИЕ НАЧАЛА</div><div class="bn-sub" id="tableCenter">МАФИЯ</div></div>
+        </div>
+        <div id="seats"></div>
+        <div class="speech" id="speech"><div class="speech-name" id="speechName"></div><div id="speechText"></div></div>
+        <div class="scene-caption"><span></span> ЗДЕСЬ ДАЖЕ АЛГОРИТМЫ УМЕЮТ ЛГАТЬ <span></span></div>
       </div>
-
-      <div class="banner">
-        <svg class="ico sun" viewBox="0 0 64 64" aria-hidden="true"><g stroke="#ffb020" stroke-width="5" stroke-linecap="round"><path d="M32 4v8M32 52v8M4 32h8M52 32h8M12 12l6 6M46 46l6 6M12 52l6-6M46 18l6-6"/></g><circle cx="32" cy="32" r="13" fill="#ffd23a"/></svg>
-        <svg class="ico moon" viewBox="0 0 64 64" aria-hidden="true"><path d="M44 10a24 24 0 1 0 10 38A20 20 0 0 1 44 10z" fill="#cfd6ff"/></svg>
-        <div class="bn-text"><div class="bn-title" id="phase">ОЖИДАНИЕ НАЧАЛА</div><div class="bn-sub" id="tableCenter">МАФИЯ</div></div>
+      <div class="stage-bottom">
+        <div class="controls">
+          <button id="btnStart" class="btn primary">▶ Начать игру</button>
+          <button id="btnPause" class="btn" disabled>⏸ Пауза</button>
+          <button id="btnStop" class="btn stop-btn" disabled>⏹ Стоп</button>
+        </div>
+        <span class="spectator"><span aria-hidden="true">◉</span> Режим зрителя</span>
       </div>
-
-      <aside class="chat">
-        <div class="chat-head">Чат стола</div>
-        <div class="chat-log" id="chatLog"></div>
-      </aside>
-
-
-      <div id="seats"></div>
-      <div class="speech" id="speech"><div class="speech-name" id="speechName"></div><div id="speechText"></div></div>
-    </div>
-    <div class="subtitle" id="subtitle"></div>
-  </section>
+      <div class="subtitle" id="subtitle" role="status"></div>
+    </section>
+    <aside class="chat" aria-label="Журнал партии">
+      <div class="chat-head"><div><span class="eyebrow">ПРЯМО СО СТОЛА</span><h2>Хроника игры</h2></div><span class="journal-icon" aria-hidden="true">≡</span></div>
+      <div class="chat-log" id="chatLog" role="log" aria-label="События и реплики"></div>
+      <div class="chat-foot"><span class="status-dot"></span> Все реплики и события — здесь</div>
+    </aside>
+  </div>
+  <footer class="page-footer"><span>♠ <strong>Правила старые. Игроки — новые.</strong></span><span>Без ключей API доступна демо-игра. <a href="#settingsModal" id="settingsLink">Подключить модели ↗</a></span></footer>
 </main>
 
 <div class="modal" id="settingsModal" hidden>
-  <div class="modal-card">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="modal-head">
-      <h2>Настройки</h2>
-      <button class="btn" id="btnCloseSettings">✕</button>
+      <div><span class="eyebrow">ЗА КУЛИСАМИ</span><h2 id="settingsTitle">Настройки клуба</h2></div>
+      <button class="btn" id="btnCloseSettings" aria-label="Закрыть настройки">✕</button>
     </div>
 
     <div class="modal-body">

@@ -24,10 +24,11 @@
       <stop offset=".18" stop-color="#101c1c"/>
       <stop offset="1" stop-color="#060c10"/>
     </linearGradient>
-    <linearGradient id="beam" x2="0" y2="1">
-      <stop stop-color="#d5a362" stop-opacity=".22"/>
+    <radialGradient id="beam">
+      <stop stop-color="#e5bf7d" stop-opacity=".18"/>
+      <stop offset=".45" stop-color="#d0a26b" stop-opacity=".08"/>
       <stop offset="1" stop-color="#c58a4c" stop-opacity="0"/>
-    </linearGradient>
+    </radialGradient>
     <pattern id="grain" width="54" height="120" patternUnits="userSpaceOnUse">
       <path d="M8 0v120M12 0v120" stroke="#91a18a" stroke-opacity=".025" stroke-width="1"/>
       <path d="M39 0v120" stroke="#020b0e" stroke-opacity=".18" stroke-width="3"/>
@@ -53,7 +54,8 @@
       <path d="M-12 103h24l8 10h-40z" fill="#bd925a"/>
       <path d="M-30 113h60l-8 14h-44z" fill="#725735" stroke="#d0a66a" stroke-width="2"/>
       <path d="M-21 127h42l-7 8h-28z" fill="#e3b976" opacity=".85"/>
-      <path d="M-45 137 0 324l45-187Z" fill="url(#beam)"/>
+      <ellipse cx="0" cy="140" rx="48" ry="38" fill="url(#beam)"/>
+      <ellipse cx="0" cy="265" rx="155" ry="180" fill="url(#beam)"/>
       <circle cy="133" r="4" fill="#ffe0a2"/>
     </g>
   </defs>
@@ -61,7 +63,7 @@
   <rect width="1200" height="800" fill="url(#room)"/>
   <path d="M0 0h1200v800H0z" fill="#000" opacity=".13"/>
 
-  <!-- Deep side walls and repeating timber bays -->
+  <!-- Деревянные панели -->
   <path d="M0 96h1200v410H0z" fill="url(#wood)"/>
   <path d="M0 96h1200v410H0z" fill="url(#grain)"/>
   <g fill="#071719" opacity=".56">
@@ -76,17 +78,17 @@
     <path d="M0 494h1200" stroke="#4b5c4c" stroke-width="3"/>
   </g>
 
-  <!-- Matching arched city recesses -->
-  <use href="#arch" x="337" y="74"/>
-  <use href="#arch" x="337" y="74" transform="translate(1200 0) scale(-1 1)"/>
+  <!-- Симметричные оконные ниши -->
+  <use href="#arch" x="145" y="74"/>
+  <use href="#arch" x="145" y="74" transform="translate(1200 0) scale(-1 1)"/>
 
-  <!-- Central darkened panel keeps the play area visually quiet -->
+  <!-- Затемнённый центр -->
   <path d="M421 188h358v296H421z" fill="#071416" opacity=".54"/>
   <path d="M438 202h324v271H438z" fill="none" stroke="#8f7650" stroke-opacity=".23" stroke-width="2"/>
   <path d="M451 215h298v245H451z" fill="none" stroke="#91a08a" stroke-opacity=".1"/>
   <path d="M600 217v240M451 339h298" stroke="#ad8857" stroke-opacity=".12"/>
 
-  <!-- Warm brass pendants at the outer edges -->
+  <!-- Тёплый свет по краям -->
   <use href="#pendant" x="175" y="0"/>
   <use href="#pendant" x="1025" y="0"/>
 

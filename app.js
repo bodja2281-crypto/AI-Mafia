@@ -142,6 +142,7 @@ function renderTable() {
     el.className = 'seat';
     el.dataset.id = p.id;
 
+    const chair = document.createElement('div'); chair.className = 'chair-legs'; chair.setAttribute('aria-hidden', 'true');
     const bubble = document.createElement('div'); bubble.className = 'bubble';
     const av = document.createElement('div'); av.className = 'avatar';
     paintAvatar(av, p, seen);
@@ -152,27 +153,36 @@ function renderTable() {
     md.textContent = p.provider && !hasKey(p) ? 'демо' : '';
     el.title = !p.provider ? '' : modelLabel(p);
     const rl = document.createElement('div'); rl.className = 'role ' + p.role; rl.textContent = ROLE_ICON[p.role] + ' ' + ROLE_SHORT[p.role];
-    el.append(bubble, av, nm, rl, md);
+    el.append(chair, bubble, av, nm, rl, md);
     seats.appendChild(el);
     p.el = el; p.bubble = bubble;
   });
   layoutSeats(); renderTableStats();
   document.body.classList.toggle('show-roles', !!S.showRoles);
 }
-// Два ряда вокруг стола, независимо от числа игроков.
+// Посадка привязана к эллипсу столешницы, а не к независимым рядам.
 function layoutSeats() {
   if (!G) return;
-  const wr = $('tableWrap'), W = wr.clientWidth, H = wr.clientHeight, n = G.players.length;
+  const wr = $('tableWrap'), W = wr.clientWidth, n = G.players.length;
   if (!W) return;
   const per = Math.ceil(n / 2);
   const ball = Math.min(86, W / (per * 1.55));
+  const table = wr.querySelector('.table');
+  const cx = table.offsetLeft + table.offsetWidth / 2;
+  const cy = table.offsetTop + table.offsetHeight / 2;
+  const rx = table.offsetWidth / 2, ry = table.offsetHeight / 2;
   wr.style.setProperty('--ball', ball + 'px');
   G.players.forEach((p, i) => {
     const row = i < per ? 0 : 1, k = row ? i - per : i;
     const count = row ? n - per : per;
     const t = (k + .5) / count;
-    p.el.style.left = (6 + 88 * t) * W / 100 + 'px';
-    p.el.style.top = ((row ? 70 : 18) - 3 * Math.sin(Math.PI * t)) * H / 100 + 'px';
+    const u = (t - .5) * 1.65;
+    const edge = cy + (row ? 1 : -1) * ry * Math.sqrt(1 - u * u);
+    const size = ball * (row ? 1 : .92);
+    p.el.style.setProperty('--ball', size + 'px');
+    p.el.classList.toggle('front-row', !!row);
+    p.el.style.left = cx + rx * u + 'px';
+    p.el.style.top = edge - size * (row ? .58 : 1.08) + 'px';
   });
 }
 function renderTableStats() {

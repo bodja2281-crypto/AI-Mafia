@@ -107,7 +107,7 @@ function svgAvatar(brand, v = 0) {
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 
-/* ===== Шарики в шляпах (стиль стрима): круглый персонаж с фетровой шляпой, злыми глазами и ртом, который открывается при речи ===== */
+/* ===== Шарики в шляпах (стиль стрима): круглый персонаж с фетровой шляпой, злыми глазами и мимикой (рот, моргание, взгляд, эмоции — через классы .seat и переменные --mo/--lx/--ly, см. style.css) ===== */
 const BALL_COLORS = {
   openai:     ['#2de0b0', '#1f7ae0', '#243b9c'],
   claude:     ['#f3a06a', '#d9622b', '#8a3a14'],
@@ -133,14 +133,13 @@ function ballSvg(brand, color, v = 0, look = 0) {
   let cols = BALL_COLORS[brand];
   if (!cols) { const c = color || '#8a8fb0'; cols = [c, c, '#14151f']; }
   const stops = cols.map((c, i) => `<stop offset="${(i / (cols.length - 1)).toFixed(2)}" stop-color="${c}"/>`).join('');
-  const dx = Math.round(look * 7);
   // брови: (x1,y1 внешний край) -> (x2,y2 внутренний край)
   const brows = [
     ['M38 98 L88 122', 'M162 98 L112 122'],     // злой
     ['M38 102 L88 120', 'M162 102 L112 120'],   // злой, чуть мягче
     ['M40 94 L88 118', 'M160 94 L112 118'],     // очень злой
   ][v % 3];
-  return `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  return `<svg viewBox="0 0 200 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="--lx0:${look}">
 <defs>
 <linearGradient id="${id}g" x1="0.1" y1="0" x2="0.9" y2="1">${stops}</linearGradient>
 <radialGradient id="${id}h" cx="0.32" cy="0.25" r="0.6"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
@@ -148,13 +147,12 @@ function ballSvg(brand, color, v = 0, look = 0) {
 <ellipse cx="100" cy="222" rx="62" ry="6" fill="#000" opacity=".28"/>
 <circle cx="100" cy="135" r="82" fill="url(#${id}g)" stroke="#000" stroke-opacity=".4" stroke-width="3"/>
 <circle cx="100" cy="135" r="82" fill="url(#${id}h)"/>
-<g>
-<ellipse cx="68" cy="132" rx="23" ry="27" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.5"/>
-<ellipse cx="132" cy="132" rx="23" ry="27" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.5"/>
-<circle cx="${68 + dx}" cy="136" r="10.5" fill="#101018"/><circle cx="${132 + dx}" cy="136" r="10.5" fill="#101018"/>
-<circle cx="${64 + dx}" cy="131" r="3.4" fill="#fff"/><circle cx="${128 + dx}" cy="131" r="3.4" fill="#fff"/>
-</g>
-<g stroke="#0d0d14" stroke-width="11" stroke-linecap="round" fill="none"><path d="${brows[0]}"/><path d="${brows[1]}"/></g>
+<g class="eye"><ellipse cx="68" cy="132" rx="23" ry="27" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.5"/>
+<g class="pupils"><g class="pupil"><circle cx="68" cy="136" r="10.5" fill="#101018"/><circle cx="64" cy="131" r="3.4" fill="#fff"/></g></g></g>
+<g class="eye"><ellipse cx="132" cy="132" rx="23" ry="27" fill="#fff" stroke="#000" stroke-opacity=".55" stroke-width="2.5"/>
+<g class="pupils"><g class="pupil"><circle cx="132" cy="136" r="10.5" fill="#101018"/><circle cx="128" cy="131" r="3.4" fill="#fff"/></g></g></g>
+<g class="x-eyes" stroke="#0d0d14" stroke-width="8" stroke-linecap="round"><path d="M54 120 L82 146 M82 120 L54 146"/><path d="M118 120 L146 146 M146 120 L118 146"/></g>
+<g stroke="#0d0d14" stroke-width="11" stroke-linecap="round" fill="none"><path class="brow brow-l" d="${brows[0]}"/><path class="brow brow-r" d="${brows[1]}"/></g>
 <path class="m-closed" d="M78 184 Q100 192 122 182" stroke="#0d0d14" stroke-width="7" stroke-linecap="round" fill="none"/>
 <g class="m-open">
 <path d="M72 178 Q100 166 128 178 Q122 210 100 210 Q78 210 72 178Z" fill="#2a0c10" stroke="#0d0d14" stroke-width="4" stroke-linejoin="round"/>

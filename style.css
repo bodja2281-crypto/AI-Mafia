@@ -116,9 +116,35 @@ body.night .scene-bg { filter: brightness(.42) saturate(.75) hue-rotate(-12deg);
 .avatar.ball svg { width: var(--ball); height: auto; display: block; overflow: visible; filter: drop-shadow(0 6px 8px rgba(0,0,0,.45)); transition: transform .25s, filter .25s; }
 .avatar.ball.apreview { --ball: 46px; width: 50px; height: 50px; }
 .avatar.ball.apreview svg { width: 46px; }
-.m-open { opacity: 0; }
-.seat.speaking .m-open { animation: mouth .34s steps(1, end) infinite; }
-@keyframes mouth { 0% { opacity: 1; } 50% { opacity: 0; } }
+/* мимика шарика. --mo — открытость рта 0..1 (app.js ставит по громкости голоса), --lx/--ly — направление взгляда -1..1 */
+.avatar.ball svg .eye, .avatar.ball svg .pupil, .avatar.ball svg .brow, .avatar.ball svg .m-open { transform-box: fill-box; transform-origin: center; }
+.avatar.ball svg .eye { transition: transform .12s; }
+.avatar.ball svg .pupils { transform: translate(calc(var(--lx, var(--lx0, 0)) * 7px), calc(var(--ly, 0) * 6px)); transition: transform .35s ease-out; }
+.avatar.ball svg .pupil { transition: transform .2s; }
+.avatar.ball svg .brow { transition: transform .25s; }
+.avatar.ball svg .x-eyes { display: none; }
+.avatar.ball svg .m-open { transform-origin: 50% 27%; transform: scale(calc(.85 + var(--mo, 0) * .15), calc(.2 + var(--mo, 0) * .8)); opacity: clamp(0, calc(var(--mo, 0) * 6), 1); }
+.avatar.ball svg .m-closed { opacity: clamp(0, calc(1 - var(--mo, 0) * 6), 1); }
+/* моргание; ночью, пока не говорит и не выбирает, — спит */
+.seat.blink .avatar.ball svg .eye,
+body.night .seat:not(.speaking):not(.thinking):not(.dead) .avatar.ball svg .eye { transform: scaleY(.08); }
+/* говорит: брови ходят */
+.seat.speaking .avatar.ball svg .brow { animation: browtalk .7s ease-in-out infinite alternate; }
+.seat.speaking .avatar.ball svg .brow-r { animation-delay: -.35s; }
+@keyframes browtalk { to { transform: translateY(-5px); } }
+/* думает: взгляд вверх-вбок, одна бровь поднята */
+.seat.thinking .avatar.ball svg .pupils { transform: translate(6px, -9px); animation: ponder 2.4s ease-in-out infinite alternate; }
+@keyframes ponder { to { transform: translate(-6px, -9px); } }
+.seat.thinking .avatar.ball svg .brow-r { transform: translateY(-8px) rotate(-8deg); }
+/* под прицелом: глаза шире, зрачки сжались, брови вверх, рот приоткрыт */
+.seat.target { --mo: .4; }
+.seat.target .avatar.ball svg .eye { transform: scale(1.12); }
+.seat.target .avatar.ball svg .pupil { transform: scale(.65); }
+.seat.target .avatar.ball svg .brow { transform: translateY(-9px); }
+/* выбыл: глаза-крестики */
+.seat.dead .avatar.ball svg .eye, .seat.dead .avatar.ball svg .brow { display: none; }
+.seat.dead .avatar.ball svg .x-eyes { display: inline; }
+.seat.dead .avatar.ball::before { display: none; }
 .seat.speaking .avatar.ball svg { transform: translateY(-8px) scale(1.07); filter: drop-shadow(0 0 16px rgba(255,200,70,.95)) drop-shadow(0 6px 8px rgba(0,0,0,.45)); animation: hop .55s ease-in-out infinite alternate; }
 @keyframes hop { to { transform: translateY(-14px) scale(1.07); } }
 .seat.speaking .avatar.ball { transform: none; animation: none; border: 0; box-shadow: none; }

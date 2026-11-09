@@ -395,9 +395,72 @@ async function ttsPrepare(p, text) {
   return null;
 }
 
+/* ===== Мимика шариков: рот по громкости голоса, моргание, взгляд на говорящего ===== */
+let audioCtx = null;
+// AudioContext создаём по клику «Начать игру», иначе браузер держит его в suspended
+function unlockAudio() {
+  try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch { }
+}
+const mouth = { el: null, an: null, buf: null, t0: 0, level: 0, raf: 0 };
+function mouthStart(p) {
+  mouthStop();
+  mouth.el = p.el; mouth.t0 = performance.now(); mouth.level = 0;
+  if (!mouth.raf) mouth.raf = requestAnimationFrame(mouthTick);
+}
+function mouthStop() {
+  if (mouth.el) mouth.el.style.removeProperty('--mo');
+  mouth.el = null; mouth.an = null;
+}
+// Подключает анализатор к <audio>. Только при running-контексте: иначе звук ушёл бы в «спящий» граф и пропал
+function mouthAttach(audio) {
+  if (!mouth.el || !audioCtx || audioCtx.state !== 'running') return;
+  try {
+    const src = audioCtx.createMediaElementSource(audio), an = audioCtx.createAnalyser();
+    an.fftSize = 512; src.connect(an); an.connect(audioCtx.destination);
+    mouth.an = an; mouth.buf = new Uint8Array(an.fftSize);
+    audio.addEventListener('ended', () => { src.disconnect(); an.disconnect(); }, { once: true });
+  } catch { }
+}
+function mouthTick(now) {
+  mouth.raf = 0;
+  if (!mouth.el) return;
+  let target = 0;
+  if (mouth.an) {
+    mouth.an.getByteTimeDomainData(mouth.buf);
+    let s = 0; for (const v of mouth.buf) { const d = (v - 128) / 128; s += d * d; }
+    const rms = Math.sqrt(s / mouth.buf.length);
+    target = rms < .015 ? 0 : Math.min(1, rms * 5);
+  } else if (!paused) {
+    // браузерный голос и демо не дают доступа к звуку — рисуем «слоги» ~4 в секунду с плавающей громкостью
+    const t = (now - mouth.t0) / 1000;
+    target = Math.max(0, Math.sin(t * 27)) * (.55 + .45 * Math.sin(t * 1.7 + 2 * Math.sin(t * .9)));
+  }
+  mouth.level += (target - mouth.level) * (target > mouth.level ? .6 : .3);
+  mouth.el.style.setProperty('--mo', mouth.level.toFixed(3));
+  mouth.raf = requestAnimationFrame(mouthTick);
+}
+// Остальные живые игроки поворачивают зрачки к говорящему
+function lookAt(p) {
+  const sx = p.el.offsetLeft, sy = p.el.offsetTop;
+  for (const q of G.players) {
+    if (q === p) { q.el.style.setProperty('--lx', 0); q.el.style.setProperty('--ly', .3); continue; }
+    const dx = sx - q.el.offsetLeft, dy = sy - q.el.offsetTop, d = Math.hypot(dx, dy) || 1;
+    q.el.style.setProperty('--lx', (dx / d).toFixed(2));
+    q.el.style.setProperty('--ly', (dy / d * .6).toFixed(2));
+  }
+}
+function lookReset() {
+  G.players.forEach(q => { q.el.style.removeProperty('--lx'); q.el.style.removeProperty('--ly'); });
+}
+setInterval(() => {
+  for (const s of document.querySelectorAll('.seat:not(.blink)')) {
+    if (Math.random() < .04) { s.classList.add('blink'); setTimeout(() => s.classList.remove('blink'), 140); }
+  }
+}, 200);
+
 function playUrl(url) {
   return new Promise(resolve => {
-    const a = new Audio(url); currentAudio = a;
+    const a = new Audio(url); currentAudio = a; mouthAttach(a);
     a.playbackRate = (S.tts === 'gemini' || S.tts === 'eleven') ? Math.min(2, Math.max(0.5, Number(S.rate) || 1)) : 1;
     a.onended = a.onerror = () => { URL.revokeObjectURL(url); currentAudio = null; resolve(); };
     a.play().catch(() => resolve());
@@ -536,8 +599,9 @@ async function say(p, text, url, tag) {
   placeSpeech(p);
   $('speech').classList.add('show');
   p.el.classList.add('speaking');
+  mouthStart(p); lookAt(p);
   try { await speak(p, text, url); }
-  finally { p.el.classList.remove('speaking'); $('speech').classList.remove('show'); }
+  finally { mouthStop(); lookReset(); p.el.classList.remove('speaking'); $('speech').classList.remove('show'); }
 }
 
 // Готовит реплику: текст от модели -> сразу в лог (чтобы следующий игрок её видел),
@@ -806,7 +870,7 @@ async function runGame() {
 }
 
 /* ================= UI ================= */
-$('btnStart').onclick = runGame;
+$('btnStart').onclick = () => { unlockAudio(); runGame(); };
 $('btnPause').onclick = () => {
   paused = !paused;
   $('btnPause').textContent = paused ? '▶ Продолжить' : '⏸ Пауза';
@@ -814,7 +878,7 @@ $('btnPause').onclick = () => {
   if (currentAudio) paused ? currentAudio.pause() : currentAudio.play();
 };
 $('btnStop').onclick = () => {
-  runToken++; paused = false; stopSpeaking(); setNight(false);
+  runToken++; paused = false; stopSpeaking(); mouthStop(); setNight(false);
   $('btnStart').disabled = false; $('btnPause').disabled = true; $('btnStop').disabled = true;
   setPhase('Остановлено'); chat('event', 'Игра остановлена.');
   G && G.players.forEach(p => p.el.classList.remove('speaking', 'thinking'));

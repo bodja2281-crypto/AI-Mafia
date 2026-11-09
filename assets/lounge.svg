@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <!-- Зал клуба: стена с панелями, бра и паркет. Стол и свет над ним рисуются отдельно. -->
+  <defs>
+    <linearGradient id="wall" x2="0" y2="1">
+      <stop stop-color="#0b1613"/>
+      <stop offset=".7" stop-color="#11211b"/>
+      <stop offset="1" stop-color="#0d1915"/>
+    </linearGradient>
+    <linearGradient id="floor" x2="0" y2="1">
+      <stop stop-color="#120c08"/>
+      <stop offset=".45" stop-color="#1c130c"/>
+      <stop offset="1" stop-color="#0b0705"/>
+    </linearGradient>
+    <radialGradient id="sconce">
+      <stop stop-color="#f1c27e" stop-opacity=".32"/>
+      <stop offset=".35" stop-color="#d79b57" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#d79b57" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pool" cx=".5" cy=".55" r=".5">
+      <stop stop-color="#e2b373" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#e2b373" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx=".5" cy=".5" r=".75">
+      <stop offset=".45" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".78"/>
+    </radialGradient>
+    <clipPath id="floorClip"><path d="M0 330h1200v370H0z"/></clipPath>
+    <g id="panel">
+      <path d="M0 0h150v230H0z" fill="#0f1e19" stroke="#06100d" stroke-width="6"/>
+      <path d="M14 14h122v202H14z" fill="none" stroke="#b08a52" stroke-opacity=".28" stroke-width="1.5"/>
+      <path d="M24 24h102v182H24z" fill="none" stroke="#9fb29a" stroke-opacity=".06"/>
+    </g>
+    <g id="sconceLamp">
+      <circle r="190" fill="url(#sconce)"/>
+      <path d="M-3 18h6v26h-6z" fill="#6f5534"/>
+      <path d="M-16 44h32l-5 8h-22z" fill="#b48d55"/>
+      <path d="M-22 -10h44l-9 28h-26z" fill="#d9b277" opacity=".9"/>
+      <path d="M-22 -10h44" stroke="#f7dca6" stroke-width="2"/>
+    </g>
+  </defs>
+
+  <path d="M0 0h1200v330H0z" fill="url(#wall)"/>
+
+  <!-- Панели симметричны относительно центра -->
+  <g opacity=".95">
+    <use href="#panel" x="40" y="70"/>
+    <use href="#panel" x="210" y="70"/>
+    <use href="#panel" x="840" y="70"/>
+    <use href="#panel" x="1010" y="70"/>
+  </g>
+  <!-- Центральная ниша с ар-деко веером -->
+  <g transform="translate(600 330)" fill="none" stroke="#b08a52">
+    <path d="M-210 0a210 210 0 0 1 420 0" stroke-opacity=".22" stroke-width="2"/>
+    <path d="M-180 0a180 180 0 0 1 360 0" stroke-opacity=".12"/>
+    <g stroke-opacity=".08">
+      <path d="M0 0V-210M0 0-105-182M0 0 105-182M0 0-182-105M0 0 182-105M0 0-54-203M0 0 54-203M0 0-148-148M0 0 148-148"/>
+    </g>
+  </g>
+
+  <use href="#sconceLamp" x="400" y="105" opacity=".55"/>
+  <use href="#sconceLamp" x="800" y="105" opacity=".55"/>
+
+  <!-- Плинтус -->
+  <path d="M0 318h1200v14H0z" fill="#080f0c"/>
+  <path d="M0 318h1200" stroke="#b08a52" stroke-opacity=".45" stroke-width="2"/>
+
+  <!-- Паркет в перспективе -->
+  <path d="M0 330h1200v370H0z" fill="url(#floor)"/>
+  <g clip-path="url(#floorClip)" stroke="#000" stroke-opacity=".32" stroke-width="2">
+    <path d="M600 40-900 700M600 40-600 700M600 40-300 700M600 40 0 700M600 40 200 700M600 40 400 700M600 40 600 700M600 40 800 700M600 40 1000 700M600 40 1200 700M600 40 1500 700M600 40 1800 700M600 40 2100 700"/>
+  </g>
+  <g stroke="#e0b880" stroke-opacity=".035" stroke-width="1" clip-path="url(#floorClip)">
+    <path d="M0 360h1200M0 398h1200M0 445h1200M0 505h1200M0 580h1200M0 670h1200"/>
+  </g>
+
+  <ellipse cx="600" cy="470" rx="560" ry="260" fill="url(#pool)"/>
+  <path d="M0 0h1200v700H0z" fill="url(#vignette)"/>
+</svg>

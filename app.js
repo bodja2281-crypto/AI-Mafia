@@ -142,6 +142,7 @@ function renderTable() {
     el.className = 'seat';
     el.dataset.id = p.id;
 
+    const chair = document.createElement('div'); chair.className = 'chair-legs'; chair.setAttribute('aria-hidden', 'true');
     const bubble = document.createElement('div'); bubble.className = 'bubble';
     const av = document.createElement('div'); av.className = 'avatar';
     paintAvatar(av, p, seen);
@@ -152,36 +153,73 @@ function renderTable() {
     md.textContent = p.provider && !hasKey(p) ? 'демо' : '';
     el.title = !p.provider ? '' : modelLabel(p);
     const rl = document.createElement('div'); rl.className = 'role ' + p.role; rl.textContent = ROLE_ICON[p.role] + ' ' + ROLE_SHORT[p.role];
-    el.append(bubble, av, nm, rl, md);
+    el.append(chair, bubble, av, nm, rl, md);
     seats.appendChild(el);
     p.el = el; p.bubble = bubble;
   });
-  layoutSeats();
+  layoutSeats(); renderTableStats();
   document.body.classList.toggle('show-roles', !!S.showRoles);
 }
-// Рассаживает игроков дугой вдоль стола (на узком экране — в два ряда)
+// Стол в перспективе сверху. Игроки сидят по краю эллипса: дальний ряд уходит под столешницу,
+// ближний сидит в креслах перед ней. Геометрия считается здесь, а стол и лампа подгоняются под неё.
 function layoutSeats() {
   if (!G) return;
   const wr = $('tableWrap'), W = wr.clientWidth, H = wr.clientHeight, n = G.players.length;
   if (!W) return;
-  const narrow = W < 700;
-  const rows = narrow && n > 4 ? 2 : 1;
-  const per = Math.ceil(n / rows);
-  const ball = Math.min(narrow ? 22 : 11.2, 90 / per) * W / 100;
+  const narrow = W < 600;
+  const per = Math.ceil(n / 2);
+  const rx = W * (narrow ? .41 : .37);
+  const ball = Math.min(84, W * (narrow ? .78 : .74) / (per + .6));
+  const h = ball * 1.15, hBack = h * .86;
+  // На узком экране реплика уезжает под стол, поэтому снизу резервируется место.
+  const speechDock = narrow ? 128 : 0;
+  const top = 78, bottom = 14 + speechDock;
+  const below = Math.max(1.36 * h, h + 46) - .45 * h;
+  const ry = Math.max(60, Math.min(rx * (narrow ? .78 : .44), (H - top - bottom - .9 * hBack - below) / 2));
+  const cx = W / 2, cy = top + .9 * hBack + ry;
   wr.style.setProperty('--ball', ball + 'px');
+
+  // Внешний край столешницы в SVG: rx 490/1000 ширины, ry 440/1000 высоты, центр на 480/1000.
+  const tw = 2 * rx / .98, th = ry / .44;
+  Object.assign(wr.querySelector('.table-zone').style, { left: cx - tw / 2 + 'px', top: cy - .48 * th + 'px', width: tw + 'px', height: th + 'px' });
+  Object.assign(wr.querySelector('.rug').style, { left: cx - tw * .85 + 'px', top: cy - .1 * th + 'px', width: tw * 1.7 + 'px', height: th * 1.15 + 'px' });
+  Object.assign(wr.querySelector('.lamp-light').style, { left: cx - rx * 1.05 + 'px', width: rx * 2.1 + 'px', height: cy + 'px' });
+
   G.players.forEach((p, i) => {
-    const r = rows === 2 ? (i < per ? 0 : 1) : 0, k = rows === 2 ? (r ? i - per : i) : i;
-    const cnt = rows === 2 ? (r ? n - per : per) : n;
-    const t = cnt > 1 ? k / (cnt - 1) : .5;
-    const x = 8 + 84 * t;
-    let y;
-    if (rows === 1) y = 55 - 7 * Math.sin(Math.PI * t) + 4;      // дуга: края ниже, середина выше
-    else y = (r ? 66 : 40) - 3 * Math.sin(Math.PI * t);
-    p.el.style.left = (x * W / 100) + 'px'; p.el.style.top = (y * H / 100) + 'px';
+    const back = i < per, k = back ? i : i - per;
+    const count = back ? per : n - per;
+    const u = count > 1 ? (k / (count - 1) - .5) * 1.72 : 0;
+    const x = cx + rx * u * (back || narrow ? 1 : .94);
+    const y = cy + (back ? -1 : 1) * ry * Math.sqrt(1 - u * u) * .97;
+    const size = back ? ball * .86 : ball;
+    p.el.style.setProperty('--ball', size + 'px');
+    p.el.classList.toggle('back', back);
+    p.el.classList.toggle('front-row', !back);
+    p.el.style.left = x - size * .625 + 'px';
+    p.el.style.top = y - size * 1.15 * (back ? .97 : .45) + 'px';
   });
+
+  const sp = $('speech').style;
+  if (narrow) {
+    sp.setProperty('--speech-x', '50%'); sp.setProperty('--speech-w', W - 24 + 'px');
+    sp.setProperty('--speech-y', H - speechDock / 2 - 6 + 'px');
+  } else {
+    // Реплика между дальним рядом с табличками и головами ближнего ряда, не задевая крайних игроков.
+    const lo = cy - ry * .97 + .03 * hBack + 52, hi = cy + ry * .97 - .45 * h;
+    sp.setProperty('--speech-x', cx + 'px');
+    sp.setProperty('--speech-y', (lo + hi) / 2 + 'px');
+    sp.setProperty('--speech-w', Math.min(rx * 1.15, 560) + 'px');
+  }
+}
+function renderTableStats() {
+  $('aliveCount').textContent = G.players.filter(p => p.alive).length;
+  $('playerCount').textContent = '/ ' + G.players.length + ' за столом';
+  const demo = G.players.filter(p => !hasKey(p)).length;
+  $('gameMode').textContent = demo === G.players.length ? 'Демо-режим' : demo ? 'AI + демо' : 'AI-режим';
 }
 window.addEventListener('resize', layoutSeats);
 function refreshSeats() {
+  renderTableStats();
   G.players.forEach(p => p.el.classList.toggle('dead', !p.alive));
 }
 function setNight(on) {
@@ -190,7 +228,7 @@ function setNight(on) {
 // Табло раунда сверху: «РАУНД: 1 / ДЕНЬ, ОБСУЖДЕНИЕ»
 const BN = { phase: '', center: '' };
 function renderBanner() {
-  const m = BN.phase.match(/d+/), word = BN.phase.split(/[ (]/)[0];
+  const m = BN.phase.match(/\d+/), word = BN.phase.split(/[ (]/)[0];
   let title, sub;
   if (m) { title = 'РАУНД: ' + m[0]; sub = word.toLowerCase() === BN.center.toLowerCase() || !BN.center ? word : word + ', ' + BN.center; }
   else { title = BN.phase; sub = BN.center.toLowerCase() === BN.phase.toLowerCase() ? '' : BN.center; }
@@ -574,29 +612,12 @@ function speakBrowser(p, text) {
   });
 }
 
-// Облачко над говорящим: сидит над головой игрока, хвостик указывает на него
-function placeSpeech(p) {
-  const wr = $('tableWrap'), sp = $('speech'), W = wr.clientWidth, H = wr.clientHeight;
-  const bw = Math.min(W * .46, 470);
-  sp.style.width = bw + 'px';
-  const sx = p.el.offsetLeft;
-  const top = Math.min(...G.players.map(q => q.el.offsetTop), p.el.offsetTop);
-  const my = W < 700 ? top : p.el.offsetTop;
-  const cx = Math.max(bw / 2 + 8, Math.min(W - bw / 2 - 8, sx));
-  sp.style.left = cx + 'px';
-  sp.style.bottom = (H - my + 12) + 'px';
-  $('speechText').style.maxHeight = Math.max(60, my - 12 - H * .17 - 40) + 'px';
-  sp.style.setProperty('--tail', Math.max(22, Math.min(bw - 22, sx - (cx - bw / 2))) + 'px');
-}
-
 // Показывает реплику и сразу играет уже загруженное аудио (текст и голос появляются вместе)
 async function say(p, text, url, tag) {
   chat(tag ? 'night' : '', text, p.name + (tag || ''), p.color);
   $('subtitle').textContent = '';                 // реплика уже в центре стола, дубль внизу не нужен
-  $('speechName').textContent = tag ? p.name + tag : '';
-  $('speechName').style.color = '#6b4a8f';
-  $('speechText').textContent = text; $('speech').scrollTop = 0;
-  placeSpeech(p);
+  $('speechName').textContent = p.name + (tag || '');
+  $('speechText').textContent = text; $('speechText').scrollTop = 0;
   $('speech').classList.add('show');
   p.el.classList.add('speaking');
   mouthStart(p); lookAt(p);
@@ -879,6 +900,7 @@ $('btnPause').onclick = () => {
 };
 $('btnStop').onclick = () => {
   runToken++; paused = false; stopSpeaking(); mouthStop(); setNight(false);
+  $('speech').classList.remove('show'); lookReset();
   $('btnStart').disabled = false; $('btnPause').disabled = true; $('btnStop').disabled = true;
   setPhase('Остановлено'); chat('event', 'Игра остановлена.');
   G && G.players.forEach(p => p.el.classList.remove('speaking', 'thinking'));
@@ -1002,10 +1024,27 @@ function readSettings() {
   S.showRoles = $('sShowRoles').checked; S.players = structuredClone(draft);
 }
 $('sAvatarMode').onchange = () => { S.avatarMode = $('sAvatarMode').value; renderPlayersEditor(); };
-$('btnSettings').onclick = () => { fillSettings(); $('settingsModal').hidden = false; };
-$('btnCloseSettings').onclick = () => { $('settingsModal').hidden = true; };
+function toggleSettings(open) {
+  if (open) fillSettings();
+  $('settingsModal').hidden = !open;
+  document.querySelector('.topbar').inert = open;
+  document.querySelector('main').inert = open;
+  (open ? $('btnCloseSettings') : $('btnSettings')).focus();
+}
+$('btnSettings').onclick = () => toggleSettings(true);
+$('settingsLink').onclick = e => { e.preventDefault(); toggleSettings(true); };
+$('btnCloseSettings').onclick = () => toggleSettings(false);
+$('settingsModal').addEventListener('keydown', e => {
+  if (e.key === 'Escape') { e.preventDefault(); toggleSettings(false); }
+  if (e.key === 'Tab') {
+    const controls = [...$('settingsModal').querySelectorAll('button, input, select')].filter(el => !el.disabled && el.getClientRects().length);
+    const first = controls[0], last = controls[controls.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+});
 $('btnSave').onclick = () => {
-  readSettings(); saveSettings(); $('settingsModal').hidden = true;
+  readSettings(); saveSettings(); toggleSettings(false);
   document.body.classList.toggle('show-roles', !!S.showRoles);
   if (!G || $('btnStart').disabled === false) { G = null; previewTable(); }
 };

@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <!-- Нуар: контора детектива, свет сквозь жалюзи. Стол и лампа рисуются отдельно. -->
+  <defs>
+    <linearGradient id="wall" x2="0" y2="1">
+      <stop stop-color="#0a0a0a"/>
+      <stop offset=".6" stop-color="#1b1b1b"/>
+      <stop offset="1" stop-color="#111"/>
+    </linearGradient>
+    <linearGradient id="floor" x2="0" y2="1">
+      <stop stop-color="#101010"/>
+      <stop offset=".45" stop-color="#1e1e1e"/>
+      <stop offset="1" stop-color="#080808"/>
+    </linearGradient>
+    <linearGradient id="glass" x2="0" y2="1">
+      <stop stop-color="#e6e6e6"/>
+      <stop offset="1" stop-color="#7a7a7a"/>
+    </linearGradient>
+    <linearGradient id="beam" x2="1">
+      <stop stop-color="#fff" stop-opacity="0"/>
+      <stop offset=".18" stop-color="#fff" stop-opacity=".3"/>
+      <stop offset=".55" stop-color="#fff" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop stop-color="#fff" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx=".5" cy=".5" r=".75">
+      <stop offset=".45" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".8"/>
+    </radialGradient>
+    <filter id="haze" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <pattern id="slats" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M0 0h10v6H0z" fill="#2c2c2c"/>
+      <path d="M0 0h10v1.2H0z" fill="#9a9a9a"/>
+    </pattern>
+    <clipPath id="floorClip"><path d="M0 330h1200v370H0z"/></clipPath>
+    <clipPath id="glassClip"><path d="M178 78h164v214H178z"/></clipPath>
+    <g id="win">
+      <circle cx="260" cy="185" r="230" fill="url(#glow)"/>
+      <path d="M164 64h192v240H164z" fill="#050505"/>
+      <path d="M178 78h164v214H178z" fill="url(#glass)"/>
+      <g clip-path="url(#glassClip)">
+        <g stroke="#fff" stroke-opacity=".35" stroke-linecap="round">
+          <path d="M196 70l-8 90M221 90l-6 70M246 70l-9 120M272 100l-5 60M297 74l-8 110M322 90l-6 80M208 180l-6 80M258 200l-5 70M310 190l-7 90M335 160l-4 60" stroke-dasharray="26 14 8 20"/>
+        </g>
+        <path d="M178 78h164v214H178z" fill="url(#slats)"/>
+      </g>
+      <path d="M257 78h6v214h-6z" fill="#050505"/>
+      <path d="M156 300h208v12H156z" fill="#2a2a2a"/>
+      <path d="M156 300h208" stroke="#aaa" stroke-width="1.5"/>
+      <path d="M164 64h192" stroke="#777" stroke-width="1.5"/>
+    </g>
+    <g id="beams">
+      <g transform="skewY(20)" fill="url(#beam)">
+        <path d="M330 10h240v16H330zM330 48h240v16H330zM330 86h240v16H330zM330 124h240v16H330zM330 162h240v16H330zM330 200h240v16H330zM330 238h240v16H330zM330 276h240v16H330zM330 314h240v16H330zM330 352h240v16H330zM330 390h240v16H330zM330 428h240v16H330z"/>
+      </g>
+    </g>
+  </defs>
+
+  <path d="M0 0h1200v330H0z" fill="url(#wall)"/>
+  <!-- Нижняя панель стены и тонкие швы штукатурки -->
+  <path d="M0 255h1200v75H0z" fill="#0c0c0c" opacity=".7"/>
+  <path d="M0 255h1200" stroke="#555" stroke-opacity=".5" stroke-width="1.5"/>
+  <path d="M130 0v330M470 0v330M730 0v330M1070 0v330" stroke="#000" stroke-opacity=".35" stroke-width="2"/>
+
+  <use href="#win"/>
+  <use href="#win" transform="matrix(-1 0 0 1 1200 0)"/>
+
+  <!-- Плинтус -->
+  <path d="M0 318h1200v14H0z" fill="#060606"/>
+  <path d="M0 318h1200" stroke="#8a8a8a" stroke-opacity=".5" stroke-width="2"/>
+
+  <!-- Доски пола сходятся к (600,250) -->
+  <path d="M0 330h1200v370H0z" fill="url(#floor)"/>
+  <g clip-path="url(#floorClip)" stroke="#000" stroke-opacity=".5" stroke-width="2">
+    <path d="M600 250-900 700M600 250-600 700M600 250-300 700M600 250 0 700M600 250 200 700M600 250 400 700M600 250 600 700M600 250 800 700M600 250 1000 700M600 250 1200 700M600 250 1500 700M600 250 1800 700M600 250 2100 700"/>
+  </g>
+  <g clip-path="url(#floorClip)" stroke="#fff" stroke-opacity=".05">
+    <path d="M0 372h1200M0 420h1200M0 480h1200M0 555h1200M0 650h1200"/>
+  </g>
+
+  <!-- Полосы света от жалюзи: стена и пол -->
+  <use href="#beams"/>
+  <use href="#beams" transform="matrix(-1 0 0 1 1200 0)"/>
+
+  <!-- Дымка -->
+  <g filter="url(#haze)" fill="#fff">
+    <ellipse cx="470" cy="200" rx="150" ry="22" opacity=".07"/>
+    <ellipse cx="760" cy="250" rx="130" ry="18" opacity=".06"/>
+  </g>
+
+  <!-- Вешалка со шляпой (слева) -->
+  <g>
+    <path d="M62 118h8v470h-8z" fill="#050505"/>
+    <path d="M70 118h2v470h-2z" fill="#bbb" opacity=".45"/>
+    <path d="M66 588l-46 22h8l38-14 38 14h8z" fill="#050505"/>
+    <path d="M66 118l-30 22M66 118l30 22M66 150l-26 16M66 150l26 16" stroke="#050505" stroke-width="5" stroke-linecap="round"/>
+    <path d="M92 140l4 0" stroke="#bbb" stroke-opacity=".5" stroke-width="2"/>
+    <!-- Шляпа -->
+    <ellipse cx="66" cy="112" rx="44" ry="8" fill="#050505"/>
+    <path d="M42 108c0-22 8-38 24-38s24 16 24 38z" fill="#050505"/>
+    <path d="M42 100h48v6H42z" fill="#2a2a2a"/>
+    <path d="M60 74c10-6 22-2 28 8" stroke="#ccc" stroke-opacity=".55" stroke-width="1.5" fill="none"/>
+    <path d="M90 112h18" stroke="#ccc" stroke-opacity=".5" stroke-width="1.5"/>
+    <!-- Плащ на крючке -->
+    <path d="M36 142c-10 30-14 80-12 150l24 4 6-110z" fill="#080808"/>
+    <path d="M96 142c8 30 10 70 10 130l-22 6-4-110z" fill="#080808"/>
+    <path d="M106 150v120" stroke="#bbb" stroke-opacity=".4" stroke-width="1.5"/>
+  </g>
+
+  <!-- Картотечный шкаф (справа) -->
+  <g>
+    <path d="M1068 392h108v226h-108z" fill="#070707"/>
+    <path d="M1068 392h2v226h-2z" fill="#c8c8c8" opacity=".55"/>
+    <path d="M1068 392h108" stroke="#aaa" stroke-opacity=".55" stroke-width="2"/>
+    <path d="M1076 402h92v66h-92zM1076 474h92v66h-92zM1076 546h92v66h-92z" fill="#101010" stroke="#2c2c2c" stroke-width="2"/>
+    <path d="M1106 430h32v6h-32zM1106 502h32v6h-32zM1106 574h32v6h-32z" fill="#555"/>
+    <path d="M1098 410h48v10h-48zM1098 482h48v10h-48zM1098 554h48v10h-48z" fill="#000" opacity=".5"/>
+    <!-- Стопка бумаг -->
+    <path d="M1086 380h44v12h-44z" fill="#2a2a2a"/>
+    <path d="M1086 380h44" stroke="#aaa" stroke-opacity=".5"/>
+  </g>
+
+  <path d="M0 0h1200v700H0z" fill="url(#vignette)"/>
+</svg>

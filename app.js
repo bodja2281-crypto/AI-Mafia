@@ -40,6 +40,7 @@ const DEFAULT_PLAYERS = [
 const DEFAULTS = {
   keys: {}, customBase: '', gTtsModel: 'gemini-2.5-flash-preview-tts', temp: 0.9,
   avatarMode: 'ball', styleV: 2,
+  look: { theme: 'club', accent: '', felt: '', props: true },
   elevenKey: '', elevenModel: 'eleven_flash_v2_5', elevenVoices: [],
   tts: 'openai', ttsModel: 'gpt-4o-mini-tts', rate: 1,
   lang: 'русский', rounds: 2, showRoles: true, players: DEFAULT_PLAYERS,
@@ -53,6 +54,7 @@ function loadSettings() {
       const st = { ...DEFAULTS, ...raw };
       if ((raw.styleV || 0) < 2) { st.avatarMode = 'ball'; st.styleV = 2; }   // новый стиль «шарики в шляпах» по умолчанию
       st.keys = { ...(raw.keys || {}) };
+      st.look = { ...DEFAULTS.look, ...(raw.look || {}) };
       // миграция со старого формата (один общий ключ + отдельный Gemini)
       if (raw.key && !st.keys.openai) st.keys.openai = raw.key;
       if (raw.gKey && !st.keys.gemini) st.keys.gemini = raw.gKey;
@@ -1058,6 +1060,97 @@ $('btnAddPlayer').onclick = () => {
 };
 $('btnReset').onclick = () => { draft = structuredClone(DEFAULT_PLAYERS); renderPlayersEditor(); };
 if ('speechSynthesis' in window) speechSynthesis.onvoiceschanged = () => {};
+
+/* ===== Оформление: стиль, акцент, сукно. Применяется сразу, сцена служит предпросмотром ===== */
+const THEMES = [
+  { id: 'club',  name: 'Клуб',   desc: 'Ар-деко, зелёное сукно и латунь' },
+  { id: 'neon',  name: 'Неон',   desc: 'Киберпанк-бар и ночной город' },
+  { id: 'noir',  name: 'Нуар',   desc: 'Чёрно-белый детектив, жалюзи' },
+  { id: 'comic', name: 'Комикс', desc: 'Яркая бумага, жирный контур' },
+];
+const ACCENTS = [
+  { id: '', name: 'Как в стиле' },
+  { id: 'gold',   name: 'Золото',   c: '#c9a76c', ink: '#201d15' },
+  { id: 'ruby',   name: 'Рубин',    c: '#e0475a', ink: '#ffffff' },
+  { id: 'cyan',   name: 'Бирюза',   c: '#22c7dd', ink: '#04161a' },
+  { id: 'violet', name: 'Фиалка',   c: '#9b7bff', ink: '#ffffff' },
+  { id: 'lime',   name: 'Лайм',     c: '#9be15d', ink: '#132006' },
+  { id: 'orange', name: 'Апельсин', c: '#ff8a3d', ink: '#1f0d00' },
+];
+const FELTS = [
+  { id: '', name: 'Как в стиле' },
+  { id: 'green',  name: 'Зелёное',    c: ['#4b7a55', '#2c5236', '#16301f'] },
+  { id: 'blue',   name: 'Синее',      c: ['#3f6aa6', '#26487a', '#132643'] },
+  { id: 'wine',   name: 'Бордовое',   c: ['#8a3a4a', '#5e2230', '#331018'] },
+  { id: 'purple', name: 'Фиолетовое', c: ['#5a3f8f', '#3b2766', '#1e1338'] },
+  { id: 'teal',   name: 'Бирюзовое',  c: ['#2ec4b6', '#1fa396', '#127a70'] },
+  { id: 'black',  name: 'Чёрное',     c: ['#3d3d3d', '#262626', '#121212'] },
+];
+function applyLook(l) {
+  const r = document.documentElement;
+  r.dataset.theme = THEMES.some(t => t.id === l.theme) ? l.theme : 'club';
+  const a = ACCENTS.find(x => x.id && x.id === l.accent);
+  if (a) { r.style.setProperty('--accent', a.c); r.style.setProperty('--accent-ink', a.ink); }
+  else { r.style.removeProperty('--accent'); r.style.removeProperty('--accent-ink'); }
+  const f = FELTS.find(x => x.id && x.id === l.felt);
+  [1, 2, 3].forEach(i => f ? r.style.setProperty('--felt-' + i, f.c[i - 1]) : r.style.removeProperty('--felt-' + i));
+  r.classList.toggle('no-props', l.props === false);
+}
+function setLook(patch) {
+  S.look = { ...S.look, ...patch };
+  saveSettings(); applyLook(S.look); renderLookState();
+}
+function renderLookState() {
+  document.querySelectorAll('#themeGrid .theme-card').forEach(c => c.setAttribute('aria-pressed', c.dataset.pick === S.look.theme));
+  document.querySelectorAll('#accentSwatches .swatch').forEach(s => s.setAttribute('aria-checked', s.dataset.pick === (S.look.accent || '')));
+  document.querySelectorAll('#feltSwatches .swatch').forEach(s => s.setAttribute('aria-checked', s.dataset.pick === (S.look.felt || '')));
+  $('lookProps').checked = S.look.props !== false;
+}
+// Наведение мышью временно показывает вариант на всей странице; уход курсора возвращает выбранный.
+function previewOnHover(el, patch) {
+  el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') applyLook({ ...S.look, ...patch }); });
+  el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') applyLook(S.look); });
+}
+function buildLookPanel() {
+  for (const t of THEMES) {
+    const b = document.createElement('button');
+    b.className = 'theme-card'; b.dataset.theme = t.id; b.dataset.pick = t.id;
+    b.innerHTML = '<span class="tc-scene" aria-hidden="true"><span class="tc-table"></span><i></i><i></i><i></i><i></i><span class="tc-say"></span></span><span class="tc-name"></span><span class="tc-desc"></span>';
+    b.querySelector('.tc-name').textContent = t.name; b.querySelector('.tc-desc').textContent = t.desc;
+    b.onclick = () => setLook({ theme: t.id });
+    previewOnHover(b, { theme: t.id });
+    $('themeGrid').appendChild(b);
+  }
+  const swatch = (box, item, key, cls) => {
+    const s = document.createElement('button');
+    s.className = 'swatch ' + (item.id ? cls : 'auto'); s.dataset.pick = item.id;
+    s.setAttribute('role', 'radio'); s.setAttribute('aria-label', item.name); s.title = item.name;
+    if (item.id) {
+      s.style.setProperty('--sw', Array.isArray(item.c) ? item.c[0] : item.c);
+      if (Array.isArray(item.c)) s.style.setProperty('--sw2', item.c[2]);
+    }
+    s.onclick = () => setLook({ [key]: item.id });
+    previewOnHover(s, { [key]: item.id });
+    box.appendChild(s);
+  };
+  ACCENTS.forEach(a => swatch($('accentSwatches'), a, 'accent', 'accent'));
+  FELTS.forEach(f => swatch($('feltSwatches'), f, 'felt', 'felt'));
+}
+function toggleLook(open) {
+  $('lookPanel').hidden = !open;
+  $('btnLook').setAttribute('aria-expanded', open);
+  if (open) {
+    renderLookState(); $('btnCloseLook').focus();
+    // На телефоне панель занимает низ экрана — подтягиваем стол наверх, чтобы видеть результат.
+    if (innerWidth <= 600) $('stage').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  } else $('btnLook').focus();
+}
+$('btnLook').onclick = () => toggleLook($('lookPanel').hidden);
+$('btnCloseLook').onclick = () => toggleLook(false);
+$('lookPanel').addEventListener('keydown', e => { if (e.key === 'Escape') { e.preventDefault(); toggleLook(false); } });
+$('lookProps').onchange = e => setLook({ props: e.target.checked });
+$('btnLookReset').onclick = () => setLook({ ...DEFAULTS.look });
+buildLookPanel(); applyLook(S.look);
 
 /* предпросмотр стола до начала игры */
 function previewTable() {

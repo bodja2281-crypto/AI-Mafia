@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <!-- Неон-бар: окна с ночным городом, неоновые вывески, глянцевый пол с сеткой. -->
+  <defs>
+    <linearGradient id="wall" x2="0" y2="1">
+      <stop stop-color="#07060d"/>
+      <stop offset=".6" stop-color="#0d0a1c"/>
+      <stop offset="1" stop-color="#140f2a"/>
+    </linearGradient>
+    <linearGradient id="floor" x2="0" y2="1">
+      <stop stop-color="#140f2a"/>
+      <stop offset=".35" stop-color="#0d0a1c"/>
+      <stop offset="1" stop-color="#07060d"/>
+    </linearGradient>
+    <linearGradient id="sky" x2="0" y2="1">
+      <stop stop-color="#0d0a1c"/>
+      <stop offset=".6" stop-color="#2a1250"/>
+      <stop offset="1" stop-color="#6a1b6e"/>
+    </linearGradient>
+    <linearGradient id="fade" gradientUnits="userSpaceOnUse" x1="0" y1="330" x2="0" y2="700">
+      <stop stop-color="#ff3fb4" stop-opacity=".6"/>
+      <stop offset=".6" stop-color="#ff3fb4" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#ff3fb4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="refM" x2="0" y2="1">
+      <stop stop-color="#ff3fb4" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#ff3fb4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="refC" x2="0" y2="1">
+      <stop stop-color="#29e7ff" stop-opacity=".2"/>
+      <stop offset="1" stop-color="#29e7ff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx=".5" cy=".5" r=".75">
+      <stop offset=".45" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".78"/>
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2"/></filter>
+    <pattern id="rain" width="26" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(14)">
+      <path d="M5 2v14M18 20v10M11 30v7" stroke="#b9c6ff" stroke-opacity=".16" stroke-width="1"/>
+    </pattern>
+    <clipPath id="winClip"><path d="M0 0h250v215H0z"/></clipPath>
+    <clipPath id="floorClip"><path d="M0 330h1200v370H0z"/></clipPath>
+
+    <!-- Окно 250x215 с силуэтами города -->
+    <g id="win">
+      <g clip-path="url(#winClip)">
+        <path d="M0 0h250v215H0z" fill="url(#sky)"/>
+        <path d="M0 150h18v-40h22v25h20v-60h24v45h18v-30h26v50h20v-70h22v40h24v-25h20v55h16v-35h20z" fill="#1d1040"/>
+        <path d="M0 215v-55h30v-35h26v20h22v-65h28v50h24v-25h30v70h22v-45h28v-30h20v115z" fill="#110a28"/>
+        <path d="M0 215v-30h24v-30h34v18h28v-48h38v34h30v-60h30v70h32v-26h34v72z" fill="#09070f"/>
+        <path d="M143 50v-30M143 20l-6 8M143 20l6 8M62 105V82" stroke="#29e7ff" stroke-opacity=".6" stroke-width="1.2"/>
+        <g stroke-width="3">
+          <path d="M80 100h60M168 118h50M30 130h40" stroke="#ff3fb4" stroke-opacity=".8" stroke-dasharray="3 6"/>
+          <path d="M105 140h40M190 100h40M12 165h70" stroke="#29e7ff" stroke-opacity=".8" stroke-dasharray="3 7"/>
+          <path d="M100 182h64M180 170h56M14 196h50" stroke="#ff3fb4" stroke-opacity=".7" stroke-dasharray="3 8"/>
+          <path d="M128 168h24M205 140h30" stroke="#8b5cff" stroke-opacity=".8" stroke-dasharray="3 6"/>
+        </g>
+        <path d="M0 0h250v215H0z" fill="url(#rain)"/>
+      </g>
+      <path d="M0 0h250v215H0z" fill="none" stroke="#06050c" stroke-width="8"/>
+      <path d="M125 0v215M0 108h250" stroke="#06050c" stroke-width="5"/>
+      <path d="M-3-3h256v221H-3z" fill="none" stroke="#29e7ff" stroke-opacity=".5" stroke-width="1.5"/>
+    </g>
+
+    <!-- Контуры вывесок: цвет и толщина задаются на <use> -->
+    <g id="cocktail" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M-34-48h68L0 2zM0 2v46M-22 48h44M8-48l24-34M-22-30h44"/>
+      <circle cx="34" cy="-86" r="6"/>
+    </g>
+    <g id="spade" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M0-62C44-24 50 14 22 20 12 21 6 18 3 13 5 30 10 42 20 52h-40C-10 42-5 30-3 13-6 18-12 21-22 20-50 14-44-24 0-62z"/>
+    </g>
+    <g id="plate">
+      <path d="M-44-120h88v250h-88z" fill="#0a0814" stroke="#2a1d4f" stroke-width="2"/>
+    </g>
+  </defs>
+
+  <path d="M0 0h1200v330H0z" fill="url(#wall)"/>
+
+  <!-- Окна, зеркально относительно центра -->
+  <use href="#win" x="130" y="85"/>
+  <use href="#win" transform="translate(1200 0) scale(-1 1)" x="130" y="85"/>
+  <g filter="url(#glow)" opacity=".45" fill="none" stroke-width="3">
+    <path d="M130 85h250v215H130zM820 85h250v215H820z" stroke="#29e7ff"/>
+  </g>
+
+  <!-- Панели между окнами с неоновыми трубками -->
+  <g fill="#0a0814" stroke="#06050c" stroke-width="4">
+    <path d="M404 128h176v190H404zM620 128h176v190H620z"/>
+  </g>
+  <g fill="none" filter="url(#soft)" opacity=".8" stroke-width="3">
+    <path d="M416 140h152v170H416z" stroke="#ff3fb4"/>
+    <path d="M632 140h152v170H632z" stroke="#29e7ff"/>
+  </g>
+  <g fill="none" stroke-width="1.2">
+    <path d="M416 140h152v170H416zM430 154h124v142H430z" stroke="#ff7fcf" stroke-opacity=".85"/>
+    <path d="M632 140h152v170H632zM646 154h124v142H646z" stroke="#a6f4ff" stroke-opacity=".85"/>
+  </g>
+
+  <!-- Вывески -->
+  <use href="#plate" x="68" y="205"/>
+  <use href="#plate" x="1132" y="205"/>
+  <g transform="translate(68 205)" filter="url(#glow)" opacity=".9">
+    <use href="#cocktail" stroke="#ff3fb4" stroke-width="7"/>
+  </g>
+  <g transform="translate(1132 205)" filter="url(#glow)" opacity=".9">
+    <use href="#spade" stroke="#29e7ff" stroke-width="7"/>
+  </g>
+  <use href="#cocktail" x="68" y="205" stroke="#ffd0ef" stroke-width="2.5"/>
+  <use href="#spade" x="1132" y="205" stroke="#d2f8ff" stroke-width="2.5"/>
+
+  <!-- Плинтус с неоновой полосой -->
+  <path d="M0 318h1200v14H0z" fill="#06050c"/>
+  <path d="M0 326h1200" stroke="#ff3fb4" stroke-width="5" opacity=".5" filter="url(#soft)"/>
+  <path d="M0 326h1200" stroke="#ff7fcf" stroke-width="1.5" stroke-opacity=".9"/>
+
+  <!-- Глянцевый пол с сеткой -->
+  <path d="M0 330h1200v370H0z" fill="url(#floor)"/>
+  <g clip-path="url(#floorClip)" fill="none" stroke="url(#fade)" stroke-width="1.2">
+    <path d="M600 250-1400 700M600 250-900 700M600 250-500 700M600 250-200 700M600 250 50 700M600 250 250 700M600 250 430 700M600 250 600 700M600 250 770 700M600 250 950 700M600 250 1150 700M600 250 1400 700M600 250 1700 700M600 250 2100 700M600 250 2600 700"/>
+    <path d="M0 340h1200M0 356h1200M0 378h1200M0 408h1200M0 450h1200M0 508h1200M0 590h1200M0 690h1200"/>
+  </g>
+
+  <!-- Отражения вывесок и окон -->
+  <g clip-path="url(#floorClip)">
+    <path d="M36 332h64v230H36z" fill="url(#refM)"/>
+    <path d="M1100 332h64v230h-64z" fill="url(#refC)"/>
+    <path d="M130 332h250v190H130z" fill="url(#refM)" opacity=".7"/>
+    <path d="M820 332h250v190H820z" fill="url(#refC)" opacity=".7"/>
+    <path d="M130 332h250M820 332h250" stroke="#29e7ff" stroke-opacity=".2" stroke-width="2"/>
+  </g>
+
+  <path d="M0 0h1200v700H0z" fill="url(#vignette)"/>
+</svg>
